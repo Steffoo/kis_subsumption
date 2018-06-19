@@ -1,5 +1,4 @@
 package lego_behavior;
-import java.util.ArrayList;
 
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.sensor.SensorMode;
@@ -52,5 +51,4 @@ public class WorldsEnd implements Behavior{
 		
 		return false;
 	}
-
 }

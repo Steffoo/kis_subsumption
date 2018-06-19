@@ -38,13 +38,13 @@ public class MainBehavior {
 		SearchLine searchLine = new SearchLine(colorSensor1, colorSensor2);
 		Bumper bumper = new Bumper();
 		Accel accel = new Accel(SLOW, FAST);
-		WorldsEnd end = new WorldsEnd(colorSensor1, colorSensor2);
+//		WorldsEnd end = new WorldsEnd(colorSensor1, colorSensor2);
 		
 		Motor.C.setSpeed(SLOW);
 		Motor.B.setSpeed(SLOW);
 
-//		Behavior[] bArray = { follower, searchLine, bumper, accel };
-		Behavior[] bArray = { end };
+		Behavior[] bArray = { follower, searchLine, bumper, accel };
+//		Behavior[] bArray = { end };
 
 		// Arbitratior steuert die Threads - true dass er nicht in eine Endlosschleife läuft
 		Arbitrator arby = new Arbitrator(bArray, true);
