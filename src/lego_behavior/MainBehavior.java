@@ -5,9 +5,7 @@ import lejos.hardware.lcd.LCD;
 import lejos.hardware.motor.Motor;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.SensorModes;
-import lejos.robotics.AccelerometerAdapter;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
@@ -38,17 +36,17 @@ public class MainBehavior {
 		SearchLine searchLine = new SearchLine(colorSensor1, colorSensor2);
 		Bumper bumper = new Bumper();
 		Accel accel = new Accel(SLOW, FAST);
-//		WorldsEnd end = new WorldsEnd(colorSensor1, colorSensor2);
+		SaveMyself safer = new SaveMyself(colorSensor1, colorSensor2);
 		
 		Motor.C.setSpeed(SLOW);
 		Motor.B.setSpeed(SLOW);
 
-		Behavior[] bArray = { follower, searchLine, bumper, accel };
-//		Behavior[] bArray = { end };
+		Behavior[] bArray = { follower, bumper, accel, searchLine, safer };
+//		Behavior[] bArray = { follower};
 
 		// Arbitratior steuert die Threads - true dass er nicht in eine Endlosschleife läuft
-		Arbitrator arby = new Arbitrator(bArray, true);
-//		Arbitrator arby = new Arbitrator(bArray);
+//		Arbitrator arby = new Arbitrator(bArray, true);
+		Arbitrator arby = new Arbitrator(bArray);
 		arby.go();
 		LCD.clear();
 		LCD.drawString("Arbitrator exit!", 0, 2);

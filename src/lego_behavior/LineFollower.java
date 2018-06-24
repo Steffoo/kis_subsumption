@@ -31,11 +31,8 @@ public class LineFollower implements Behavior{
 		this.col1 = this.colorSensor1.getMode("ColorID");
 		this.col2 = this.colorSensor2.getMode("ColorID");
 		
-		int size1 = this.colorSensor1.sampleSize();
-		int size2 = this.colorSensor2.sampleSize();
-
-		this.sampleLeft = new float[size1];
-		this.sampleRight = new float[size2];
+		this.sampleLeft = new float[this.colorSensor1.sampleSize()];
+		this.sampleRight = new float[this.colorSensor2.sampleSize()];
 	}
 	
 
@@ -85,6 +82,11 @@ public class LineFollower implements Behavior{
 			int left = (int) sampleLeft[0];
 			int right = (int) sampleRight[0];
 
+//			LCD.drawString("Color", 0, 3);
+//			LCD.drawString("left", 0, 3);
+//			LCD.drawString("right", 0, 4);
+//			LCD.drawInt(left, 8, 3);
+//			LCD.drawInt(right, 8, 4);
 			
 			// grün = Abbiegen auf die Seite des grünen Symbols
 			if (left == green || right == green) {
@@ -107,7 +109,7 @@ public class LineFollower implements Behavior{
 			} else if (left == white && right == black) {
 				Motor.B.stop();
 				Motor.C.forward();
-				// drehen bis rechts wieder weiss
+				
 				while (right == black) {
 					col1.fetchSample(sampleLeft, 0);
 					col2.fetchSample(sampleRight, 0);
@@ -120,7 +122,7 @@ public class LineFollower implements Behavior{
 			} else if (right == white && left == black) {
 				Motor.C.stop();
 				Motor.B.forward();
-				// drehen bis links wieder weiss
+				
 				while (left == black) {
 					col1.fetchSample(sampleLeft, 0);
 					col2.fetchSample(sampleRight, 0);

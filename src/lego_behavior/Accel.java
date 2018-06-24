@@ -58,7 +58,7 @@ public class Accel implements Behavior {
 		LCD.drawString("accel", 0, 2);
 		LCD.drawInt(accel, 0, 3);
 
-		if (accel <= -3) {
+		if (accel <= -4) {
 			return true;
 		} else { 
 			return false;
