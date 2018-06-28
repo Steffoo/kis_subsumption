@@ -11,7 +11,7 @@ import lejos.utility.Delay;
 public class LineFollower implements Behavior{
 
 	// Einstellungen für das primitive Verhalten
-	private int TURN_DELAY = 1500;
+	private int TURN_DELAY = 2500;
 	private boolean suppressed = false;
 	boolean stopArby = false;
 	
@@ -107,7 +107,7 @@ public class LineFollower implements Behavior{
 				bothMotorsForward();
 			// rechts = schwarz
 			} else if (left == white && right == black) {
-				Motor.B.stop();
+				Motor.B.backward();
 				Motor.C.forward();
 				
 				while (right == black) {
@@ -120,7 +120,7 @@ public class LineFollower implements Behavior{
 				Motor.B.forward();
 			// links = schwarz
 			} else if (right == white && left == black) {
-				Motor.C.stop();
+				Motor.C.backward();
 				Motor.B.forward();
 				
 				while (left == black) {

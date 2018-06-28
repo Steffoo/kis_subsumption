@@ -25,9 +25,10 @@ public class Accel implements Behavior {
 	@Override
 	public void action() {
 		this.suppressed = false;
+		// beschleunigen für Rampe
 		Motor.B.setSpeed(fast);
-		Motor.C.setSpeed(fast);
-		Delay.msDelay(2000);
+		Motor.C.setSpeed(fast + 80);
+		Delay.msDelay(1000);
 		
 		while(!suppressed) {
 			
@@ -37,6 +38,7 @@ public class Accel implements Behavior {
 			LCD.drawString("accel", 0, 2);
 			LCD.drawInt(accel, 0, 3);
 
+			// wenn auf gerader Ebene wieder verlangsamen
 			if (accel >= 0) {
 				this.suppress();
 			}

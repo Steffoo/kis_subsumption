@@ -50,25 +50,17 @@ public class SaveMyself implements Behavior {
 		Motor.B.stop();
 		Motor.C.stop();
 		
+		Motor.C.resetTachoCount();
+		
 		Motor.B.backward();
 		Motor.C.forward();		
 		
-		LCD.clearDisplay();
-		
-		while(!this.suppressed) {
-			col1.fetchSample(sampleLeft, 0);
-			col2.fetchSample(sampleRight, 0);
-			left = (int) sampleLeft[0];
-			right = (int) sampleRight[0];
+		while(Motor.C.getTachoCount() < 350 && !this.suppressed) {
+			LCD.drawString("tacho", 0, 3);
+			LCD.drawInt(Motor.C.getTachoCount(), 8, 4);
+			fetchColor();
+			checkSuppress();
 			
-			LCD.drawString("angle", 0, 4);
-			LCD.drawInt(Motor.B.getTachoCount(), 8, 4);
-			
-			if (left == black || right == black) {
-				this.suppress();
-			}
-			
-			// manuell Verhalten stoppen
 			if (Button.getButtons() == Button.ID_UP) {
 				this.suppress();
 				LCD.clear();
@@ -76,6 +68,10 @@ public class SaveMyself implements Behavior {
 				Motor.C.stop();
 			}
 		}
+		Motor.C.resetTachoCount();
+		LCD.clearDisplay();
+		this.suppressed = false;
+		
 	}
 		
 
@@ -100,6 +96,20 @@ public class SaveMyself implements Behavior {
 		} else {
 			return false;
 		}
+	}
+	
+	public void checkSuppress() {
+		// Suche abbrechen wenn Line gefunden wurde oder Tischrand erreicht wird 
+		if ( left == black || right == black || left == -1 || right == -1) {
+			this.suppress();
+		}
+	}
+	
+	public void fetchColor() {
+		col1.fetchSample(sampleLeft, 0);
+		col2.fetchSample(sampleRight, 0);
+		left = (int) sampleLeft[0];
+		right = (int) sampleRight[0];
 	}
 
 }

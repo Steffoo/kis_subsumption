@@ -21,7 +21,7 @@ public class SearchLine implements Behavior {
 	int right = 0;
 	
 	//Distanz nach der das Verhalten angenommen wird
-	int takeControlDistance = 500;
+	int takeControlDistance = 400;
 
 	private boolean suppressed = false;
 
@@ -53,10 +53,7 @@ public class SearchLine implements Behavior {
 		int tacho = Motor.B.getTachoCount();
 
 		// Farbwerte lesen
-		col1.fetchSample(sampleLeft, 0);
-		col2.fetchSample(sampleRight, 0);
-		left = (int) sampleLeft[0];
-		right = (int) sampleRight[0];
+		fetchColor();
 
 		if (left != black && right != black) {
 //			LCD.drawString("angle", 0, 3);
@@ -87,11 +84,11 @@ public class SearchLine implements Behavior {
 		LCD.drawString("search now", 0, 2);
 		
 		// Suche mit Distanz
-		this.search(300);
+		this.search();
 	}
 
 	// Suchmethode
-	public void search(int distance) {
+	public void search() {
 		int left = 0;
 		int right = 0;
 
@@ -100,66 +97,46 @@ public class SearchLine implements Behavior {
 		
 		String drift = "";
 		
-		
 		while (!this.suppressed) {
 			// Farbwerte lesen
-			col1.fetchSample(sampleLeft, 0);
-			col2.fetchSample(sampleRight, 0);
-			left = (int) sampleLeft[0];
-			right = (int) sampleRight[0];
-			
-			// Suche abbrechen wenn Line gefunden wurde oder Tischrand erreicht wird 
-			if ( left == black || right == black || left == -1 || right == -1) {
-				this.suppress();
-				return;
-			}
+			fetchColor();
+			this.checkSuppress();
 						
-			int driftDuration = 2000; // ms je nach Geschwindigkeit anpassen
+			Motor.B.resetTachoCount();
+			Motor.C.resetTachoCount();
 			
 			// abwechselnd rechts oder links suchen
 			if (drift.equals("")) {
 				Motor.C.stop();
-				Delay.msDelay(driftDuration / 2);
-				Motor.C.forward();
+				while (Motor.B.getTachoCount() < (this.takeControlDistance / 2 ) && !suppressed) {
+					fetchColor();
+					checkSuppress();
+				}
 			} else if (drift.equals("right")) {
 				Motor.C.stop();
-				Delay.msDelay(driftDuration);
-				Motor.C.forward();
+				while (Motor.B.getTachoCount() < this.takeControlDistance && !suppressed) {
+					fetchColor();
+					checkSuppress();
+				}
 			} else {
 				Motor.B.stop();
-				Delay.msDelay(driftDuration);
-				Motor.B.forward();
+				while (Motor.C.getTachoCount() < this.takeControlDistance && !suppressed) {
+					fetchColor();
+					checkSuppress();
+				}
+				
 			}
-			
-			Motor.B.forward();
-			Motor.C.forward();
 			
 			drift = (drift.equals("left"))? "right" : "left";
 			Motor.B.resetTachoCount();
 			
-			// suche solange Distanz noch nicht erreicht 
-			while (Motor.B.getTachoCount() < distance && !suppressed) {
-				col1.fetchSample(sampleLeft, 0);
-				col2.fetchSample(sampleRight, 0);
-				left = (int) sampleLeft[0];
-				right = (int) sampleRight[0];
-				
-				// Suche abbrechen wenn Line gefunden wurde oder Tischrand erreicht wird 
-				if ( left == black || right == black || left == -1 || right == -1) {
-					this.suppress();
-					return;
-				}
-					
-				
-				// manuell Verhalten stoppen
-				if (Button.getButtons() == Button.ID_UP) {
-					this.suppress();
-					LCD.clear();
-					Motor.B.stop();
-					Motor.C.stop();
-				}
-			}
+			Motor.B.forward();
+			Motor.C.forward();
 			
+			while (Motor.B.getTachoCount() < this.takeControlDistance && !suppressed) {
+				fetchColor();
+				checkSuppress();
+			}
 			
 			// manuell Verhalten stoppen
 			if (Button.getButtons() == Button.ID_UP) {
@@ -171,41 +148,18 @@ public class SearchLine implements Behavior {
 		}
 	}
 	
-	public void safeYourself() {
-		Motor.B.backward();
-		Motor.C.backward();
-		
-		Delay.msDelay(3000);
-		
-		Motor.B.stop();
-		Motor.C.stop();
-		
-		Motor.B.backward();
-		Motor.C.forward();		
-		
-		while(!this.suppressed) {
-			col1.fetchSample(sampleLeft, 0);
-			col2.fetchSample(sampleRight, 0);
-			left = (int) sampleLeft[0];
-			right = (int) sampleRight[0];
-			
-//			LCD.drawString("angle", 0, 3);
-//			LCD.drawInt(Motor.B.getTachoCount(), 0, 4);
-			
-			if (left == black || right == black) {
-				Motor.C.backward();
-				Delay.msDelay(500);
-				this.suppress();
-			}
-			
-			// manuell Verhalten stoppen
-			if (Button.getButtons() == Button.ID_UP) {
-				this.suppress();
-				LCD.clear();
-				Motor.B.stop();
-				Motor.C.stop();
-			}
+	public void checkSuppress() {
+		// Suche abbrechen wenn Line gefunden wurde oder Tischrand erreicht wird 
+		if ( left == black || right == black || left == -1 || right == -1) {
+			this.suppress();
 		}
+	}
+	
+	public void fetchColor() {
+		col1.fetchSample(sampleLeft, 0);
+		col2.fetchSample(sampleRight, 0);
+		left = (int) sampleLeft[0];
+		right = (int) sampleRight[0];
 	}
 
 }

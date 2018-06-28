@@ -34,7 +34,7 @@ public class MainBehavior {
 		// erstellen der Verhalten-Objekte
 		LineFollower follower = new LineFollower(colorSensor1, colorSensor2);
 		SearchLine searchLine = new SearchLine(colorSensor1, colorSensor2);
-		Bumper bumper = new Bumper();
+		Bumper bumper = new Bumper(colorSensor1, colorSensor2);
 		Accel accel = new Accel(SLOW, FAST);
 		SaveMyself safer = new SaveMyself(colorSensor1, colorSensor2);
 		
